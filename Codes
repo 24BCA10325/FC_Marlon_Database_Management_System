@@ -30,6 +30,8 @@ CREATE TABLE Positions (
     Category VARCHAR(50) NOT NULL
 );
 
+
+
 CREATE TABLE Nationalities (
     NationalityID INT PRIMARY KEY AUTOINCREMENT,
     CountryCode VARCHAR(50),
