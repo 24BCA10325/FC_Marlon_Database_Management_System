@@ -1,0 +1,115 @@
+-- TABLE CREATION
+
+CREATE TABLE Players (
+    PlayerId INT PRIMARY KEY AUTOINCREMENT,
+    JerseyNumber INT UNIQUE NOT NULL,
+    Position VARCHAR(2) CHECK (Position IN ('GK', 'DF', 'MF', 'FW')),
+    FullName VARCHAR(50) NOT NULL,
+    Nationality VARCHAR(50),
+    ContractStartDate DATE,
+    ContractEndDate DATE,
+    MarketValue DECIMAL(10,2),
+    Status VARCHAR(50),
+    MedicalStatus VARCHAR(50)
+);
+
+CREATE TABLE Staff (
+    StaffId INT PRIMARY KEY AUTOINCREMENT,
+    FullName VARCHAR(100) NOT NULL,
+    Role VARCHAR(100) NOT NULL,
+    Department VARCHAR(100),
+    Nationality VARCHAR(100),
+    DateJoined VARCHAR(100),
+    ContractEndDate DATE
+);
+
+CREATE TABLE Positions (
+    PositionID INT PRIMARY KEY AUTOINCREMENT,
+    PositionCode VARCHAR(50),
+    PositionName VARCHAR(100),
+    Category VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Nationalities (
+    NationalityID INT PRIMARY KEY AUTOINCREMENT,
+    CountryCode VARCHAR(50),
+    CountryName VARCHAR(100)
+);
+
+CREATE TABLE LoanHistory (
+    LoanId INT PRIMARY KEY AUTOINCREMENT,
+    PlayerID INT UNIQUE NOT NULL,
+    LoanClub VARCHAR(50) NOT NULL,
+    LoanStartDate DATE,
+    LoanEndDate DATE,
+    Status VARCHAR(100)
+);
+
+-- SAMPLE INSERT STATEMENTS
+
+INSERT INTO Positions (PositionCode, PositionName, Category) VALUES
+('GK', 'Goalkeeper', 'GK'),
+('DF', 'Defender', 'DF'),
+('MF', 'Midfielder', 'MF'),
+('FW', 'Forward', 'FW');
+
+INSERT INTO Nationalities (CountryCode, CountryName) VALUES
+('TUR', 'Turkey'),
+('POR', 'Portugal'),
+('MAR', 'Morocco'),
+('NED', 'Netherlands'),
+('ENG', 'England'),
+('ARG', 'Argentina'),
+('BRA', 'Brazil'),
+('CIV', 'Ivory Coast'),
+('CMR', 'Cameroon'),
+('DEN', 'Denmark'),
+('URU', 'Uruguay'),
+('SVN', 'Slovenia'),
+('BEL', 'Belgium'),
+('PAR', 'Paraguay'),
+('IRL', 'Ireland'),
+('AUS', 'Australia'),
+('ANG', 'Angola'),
+('FRA', 'France');
+
+-- (Sample insert for players and staff, use your data accordingly)
+-- Example:
+INSERT INTO Players (JerseyNumber, Position, FullName, Nationality, ContractStartDate, ContractEndDate, MarketValue, Status, MedicalStatus) VALUES
+(1, 'GK', 'Altay Bayindir', 'TUR', '2023-07-01', '2027-06-30', 15000000, 'Active', 'Fit');
+
+INSERT INTO Staff (FullName, Role, Department, Nationality, DateJoined, ContractEndDate) VALUES
+('Ruben Amorim', 'Head Coach', 'Coaching', 'POR', '2023-07-01', '2027-06-30');
+
+-- SAMPLE INSERT FOR LOAN HISTORY:
+INSERT INTO LoanHistory (PlayerID, LoanClub, LoanStartDate, LoanEndDate, Status) VALUES
+(27, 'Napoli', '2024-07-01', '2026-06-30', 'Active');
+
+-- QUERIES
+
+-- 1. Get all players ordered by position and jersey number
+SELECT JerseyNumber, FullName, Position, Nationality
+FROM Players
+WHERE Status = 'Active'
+ORDER BY Position, JerseyNumber;
+
+-- 2. Players by position
+SELECT JerseyNumber, FullName, Position, Nationality
+FROM Players
+ORDER BY Position, JerseyNumber;
+
+-- 3. Contract alerts and expiry query
+SELECT FullName, ContractEndDate
+FROM Players
+WHERE ContractEndDate BETWEEN DATE('now') AND DATE('now', '+6 months');
+
+-- 4. Loaned players
+SELECT FullName, LoanClub, LoanStartDate, LoanEndDate, Status
+FROM LoanHistory
+JOIN Players ON LoanHistory.PlayerID = Players.PlayerId
+WHERE Status = 'Active';
+
+-- 5. Medical status summaries
+SELECT MedicalStatus, COUNT(*) as Count
+FROM Players
+GROUP BY MedicalStatus;
